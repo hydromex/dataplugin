@@ -1,0 +1,36 @@
+plugin:
+  name: GroundVarsGrid_v1
+  version: 1.0.0
+  description: >
+    Plugin to store the ground variable grid data from netCDF to Cassandra v1
+  script:
+    - /script/CSVDump.py
+  help-file: /script/help/README.txt
+  loader-class: plugin.Loader
+  programming-language: Python
+  target-OS:
+    - Linux
+  target-DB: Cassandra
+  supported-files:
+    - format:
+        - nc
+      convention: CF-1.0
+      # source -> Nebraska, NOAA, etc
+      # series -> GHCN, etc
+      # file-name -> ghc.*\.nc
+      # year -> from to
+  # tags
+  dependencies:
+    - name: cassandra
+      type: DB
+    - name: cqlsh
+      type: command
+    - name: python
+      type: command
+    - name: log4j-api-2.5.jar
+      type: jar
+    - name: log4j-core-2.5.jar
+      type: jar
+    - name: dataplugin.api_2.0.0.jar
+      type: jar
+  vendor: jdosornio

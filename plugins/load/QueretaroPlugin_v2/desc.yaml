@@ -1,0 +1,40 @@
+plugin:
+  name: QueretaroPlugin
+  version: 2.0.0
+  description: >
+    Plugin para la conversión de datos GHG de la estación de Queretaro
+    perteneciente a la Universidad Autónoma de Queretaro, el plugin
+    ejecuta un script de python para convertir los datos a archivos JSON
+    y cargarlos a una base de datos MongoDB
+  script:
+    - /script/GHGtoJSON.py
+  help-file: /script/help/README.txt
+  loader-class: impl.load.Loader
+  programming-language:
+    name: Python
+    version: 2
+  target-OS:
+    - Windows
+    - Linux
+  target-DB: MongoDB
+  supported-files:
+    - format:
+        - ghg
+      # convention -> CF-1.0
+      # source -> Nebraska, NOAA, etc
+      # series -> GHCN, etc
+      # file-name -> ghc.*\.nc
+      # year -> from to
+  # tags
+  dependencies:
+    - name: MongoDB
+      type: DB
+    - name: python
+      type: command
+    - name: log4j-api-2.5.jar
+      type: jar
+    - name: log4j-core-2.5.jar
+      type: jar
+    - name: dataplugin.api_2.0.0.jar
+      type: jar
+  vendor: aherrera

@@ -1,0 +1,42 @@
+plugin:
+  name: PISAtoPostgresDumper
+  version: 1.0.0
+  description: >
+    Plugin to store all the PISA datasets from year 2000 to 2012, joining syntax and data files and storing them in
+    a PostgreSQL data warehouse. version 1.
+  script:
+    - /script/CSVDump.py
+  help-file: /script/help/README.txt
+  loader-class: plugin.Loader
+  programming-language:
+    name: Python
+    version: 3
+  target-OS:
+    - Linux
+    - Windows
+    - OS X
+  target-DB: PostgreSQL
+  supported-files:
+    - format:
+        - sps
+        - spss
+      # convention -> CF-1.0
+      # source -> Nebraska, NOAA, etc
+      # series -> GHCN, etc
+      # file-name -> ghc.*\.nc
+      # year -> from to
+  # tags
+  dependencies:
+    - name: postgreSQL
+      type: DB
+    - name: psql
+      type: command
+    - name: python3
+      type: command
+    - name: log4j-api-2.5.jar
+      type: jar
+    - name: log4j-core-2.5.jar
+      type: jar
+    - name: dataplugin.api_2.0.0.jar
+      type: jar
+  vendor: jdosornio

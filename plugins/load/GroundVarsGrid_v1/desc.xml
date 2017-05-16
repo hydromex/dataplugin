@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+	<name>GroundVarsGrid_v1</name>
+	<version>1.0.0</version>
+	<programming-language>Python</programming-language>
+	<target-OS>Linux</target-OS>
+	<dependencies>
+		<dbms>cassandra</dbms>
+		<command>python</command>
+		<jar>log4j-api-2.5.jar</jar>
+		<jar>log4j-core-2.5.jar</jar>
+		<jar>dataplugin.api_2.0.0.jar</jar>
+	</dependencies>
+	<help-file>script/help/README.txt</help-file>
+	<loader-class>plugin.Loader</loader-class>
+	<description>
+		Plugin to store the ground variable grid data from netCDF to Cassandra
+		v1
+	</description>
+	<vendor>jdosornio</vendor>
+</plugin>

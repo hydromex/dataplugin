@@ -1,0 +1,4 @@
+config:
+  plugin-dir: /home/jdosornio/IdeaProjects/dataplugin/plugins/load
+  # log-file ->
+  # landing-area ->
