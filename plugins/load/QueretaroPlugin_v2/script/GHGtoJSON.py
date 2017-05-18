@@ -36,21 +36,23 @@ def extractghg(filename):
 		print "Extract ghg time: " + str(elapsedtime)
 		return result
 
-def processdata(filename, filedate, filedata):
+def processdata(filename, filedate, filedata, outputDir):
 	starttime = time.time()
 	if not filedata:
 		return
 	lines = filedata.splitlines()
-	data = {'filename':filename, 'filedate':filedate, 'data':[]}
+	header = {'filename':filename, 'filedate':filedate}
 	variables = []
 	for line in lines[0:6]:
 		[variable, value] = line.split(':\t')
 		value = tofloatorint(value)
-		data[variable.replace(' ', '_')] = value
+		header[variable.replace(' ', '_')] = value
 
 	variables = lines[7].split('\t')
 
+	auxtime = time.time()
 	for line in lines[8:]:
+		data = header
 		values = line.split('\t')
 		ints = [int(x) for x in values[1:6]]
 		floats = [float(x) for x in values[8:]]
@@ -62,17 +64,16 @@ def processdata(filename, filedate, filedata):
 		newValues.extend(ints)
 		newValues.extend(values[6:8])
 		newValues.extend(floats)
-		data['data'].append(dict(zip(variables, newValues)))
-
-	auxtime = time.time()
-	with open('data.json', 'a') as jsonfile:
-		ujson.dump(data, jsonfile)
+		data.update(dict(zip(variables, newValues)))
+		with open(outputDir + 'data.json', 'a') as jsonfile:
+			ujson.dump(data, jsonfile)
+			jsonfile.write('\n')
 	print "Writing in json: " + str(time.time() - auxtime)
 
 	elapsedtime = time.time() - starttime
 	print "Process data time: " + str(elapsedtime)
 
-def processmetadata(filename, filedate, metadata):
+def processmetadata(filename, filedate, metadata, outputDir):
 	starttime = time.time()
 	data = {'filename':filename, 'date':filedate}
 	data['instruments'] = []
@@ -112,13 +113,13 @@ def processmetadata(filename, filedate, metadata):
 					data[variable] = value
 			else:
 				data[variable] = value
-	with open('metadata.json', 'a') as jsonfile:
+	with open(outputDir + 'metadata.json', 'a') as jsonfile:
 		ujson.dump(data, jsonfile)
 		jsonfile.write('\n')
 	elapsedtime = time.time() - starttime
 	print "Process metadata time: " + str(elapsedtime)
 
-def processresult(data):
+def processresult(data, outputDir):
 	starttime = time.time()
 	lines = data.splitlines()
 	result = {}
@@ -146,7 +147,7 @@ def processresult(data):
 		result[columns[i]]['format'] = formats[i]
 		result[columns[i]]['section'] = currentSection
 
-	with open('result.json', 'a') as jsonfile:
+	with open(outputDir + 'result.json', 'a') as jsonfile:
 		json.dump(result, jsonfile, default=json_util.default)
 		jsonfile.write('\n')
 	elapsedtime = time.time() - starttime
@@ -187,15 +188,17 @@ if len(sys.argv) > 3:
 if len(sys.argv) > 4:
 	todate = datetime.strptime(sys.argv[4], "%d/%m/%Y")
 
+outputDir = os.path.abspath(os.path.join(sys.argv[0], os.pardir)) + os.sep
+
 if rawdir:
 	rawfiles = os.listdir(rawdir)
-	with open('metadata.json', 'w'):
+	with open(outputDir + 'metadata.json', 'w'):
 		pass
-	with open('data.json', 'w'):
+	with open(outputDir + 'data.json', 'w'):
 		pass
 if resultdir:
 	resultfiles = os.listdir(resultdir)
-	with open('result.json', 'w'):
+	with open(outputDir + 'result.json', 'w'):
 		pass
 
 # Process all raw files (metadata and data files)
@@ -219,10 +222,10 @@ for filename in rawfiles:
 		files = extractghg(rawdir + '/' + filename)
 		if 'metadata' in files:
 			#Process and save metadata in json file
-			processmetadata(filename, filedate, files['metadata'])
+			processmetadata(filename, filedate, files['metadata'], outputDir)
 		if 'data' in files:
 			#Process and save data in json file
-			processdata(filename, filedate, files['data'])
+			processdata(filename, filedate, files['data'], outputDir)
 
 	elapsedtime = time.time() - starttime
 	print "File " + filename + " time: " + str(elapsedtime)
@@ -247,7 +250,7 @@ for filename in resultfiles:
 		filelist = resultzip.namelist()
 		for file in filelist:
 			if file.endswith('.csv'):
-				processresult(resultzip.read(file))
+				processresult(resultzip.read(file), outputDir)
 
 	elapsedtime = time.time() - starttime
 	print "File " + filename + " time: " + str(elapsedtime)

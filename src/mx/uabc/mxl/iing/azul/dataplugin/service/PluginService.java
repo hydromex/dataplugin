@@ -18,8 +18,8 @@ public class PluginService {
     // The Java method will produce content identified by the MIME Media type "text/plain"
 //    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
-    public String executePlugin(@FormParam("name") String pluginName, @FormParam("args") List<String> args) {
-        PluginManager.executePlugin(pluginName, args.toArray(new String[args.size()]));
+    public String executePlugin(@FormParam("name") String pluginName, @FormParam("args") String args) {
+        PluginManager.executePlugin(pluginName, args.split(","));
 
         return "Plugin [" + pluginName + "] sent with args [" + args + "] for async execution...";
     }

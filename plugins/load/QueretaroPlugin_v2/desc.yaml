@@ -12,7 +12,7 @@ plugin:
   loader-class: impl.load.Loader
   programming-language:
     name: Python
-    version: 2
+    version: 2.7
   target-OS:
     - Windows
     - Linux
@@ -37,4 +37,8 @@ plugin:
       type: jar
     - name: dataplugin.api_2.0.0.jar
       type: jar
+    - name: pymongo
+      type: python-module
+    - name: ujson
+      type: python-module
   vendor: aherrera

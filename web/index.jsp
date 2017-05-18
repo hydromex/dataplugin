@@ -13,9 +13,9 @@
   </head>
   <body>
   $END$
-  <!-- <script>
+  <!--<script>
           jQuery.post( "http://localhost:8080/dataplugin/rs/p/exec",
-              { name: "PISAtoPostgresDumper_v1", args: ['/home/jdosornio/Documents/iing/PISA/2003'].join(',')} );
+              { name: "QueretaroPlugin", args: ['/home/jdosornio/Licornuevo/raw', '/home/jdosornio/Licornuevo/results'].join(',')} );
   </script> -->
   </body>
 </html>

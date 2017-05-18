@@ -6,6 +6,8 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import mx.uabc.mxl.iing.azul.dataplugin.datastore.CopyStrategy;
 import mx.uabc.mxl.iing.azul.dataplugin.descriptor.PluginDescriptor;
@@ -63,7 +65,7 @@ public class PluginImpl extends Plugin {
 	    	//(Input)
 	    	File dirRaw = new File(args[0]);
 	    	//(Output) Creating all temporary results in plugin working dir (temp)
-	    	File dirResult = new File(pluginDir, args[1]);
+	    	File dirResult = new File(args[1]);
 	    	String fromDate = (args.length > 2) ? args[2] : "";
 	    	String toDate = (args.length > 3) ? args[3] : "";
 	    	
@@ -86,20 +88,27 @@ public class PluginImpl extends Plugin {
                 File copiedScript = FileUtil.copyFilesTo(pluginDir, SCRIPT)[0];
 		    	
 		    	//Create command like
-		    	//python GHGtoJSON.py <<raw data directory>> <<result data directory>> <<optional date>>
-		    	String[] command = {PYTHON_COMMAND, copiedScript.getPath(), dirRaw.getPath(),
-                        dirResult.getPath(), fromDate, toDate};
-		    	
-		    	//Log
+		    	//python [pluginDir]/GHGtoJSON.py <<raw data directory>> <<result data directory>> <<optional date>>
+                List<String> command = Arrays.asList(PYTHON_COMMAND, copiedScript.getPath(), dirRaw.getPath(),
+                        dirResult.getPath());
+                //Add if args present
+                if (!fromDate.isEmpty()) {
+                    command.add(fromDate);
+                }
+                if (!toDate.isEmpty()) {
+                    command.add(toDate);
+                }
+
+                //Log
 		    	MessageMediator.sendMessage(getName(), "Executing " +
 		    			copiedScript.getName(), MessageMediator.INFO_MESSAGE);
 
-                ProcessUtil.executeProcess(command);
+                ProcessUtil.executeProcess(command.toArray(new String[command.size()]));
 
                 //What?
-		    	File dataFile = new File("data.json");
-		    	File metadataFile = new File("metadata.json");
-		    	File resultFile = new File("result.json");
+		    	File dataFile = new File(pluginDir, "data.json");
+		    	File metadataFile = new File(pluginDir, "metadata.json");
+		    	File resultFile = new File(pluginDir, "result.json");
 		    	
 		    	
 		    	ArrayList<String> processedFiles = new ArrayList<>();
@@ -125,7 +134,7 @@ public class PluginImpl extends Plugin {
     		MessageMediator.sendMessage(getName(), "Two arguments are needed to execute"
     				+ " this plugin [Raw data directory, Result data directory]",
     				MessageMediator.ERROR_MESSAGE);
-    		ok = -1;
+    		ok = 15;
     	}
     	return ok;
 	}
