@@ -1,0 +1,41 @@
+plugin:
+  name: QueretaroSummaryPlugin
+  version: 1.0.0
+  description: >
+    Plugin para la descarga de archivos de resumen provenientes de
+    la página fluxsuite.com, el resumen de los datos proviene de la
+    estación EddyPro localizada en Bernal, Queretaro. 
+  script:
+    - /script/licor_summary.py
+  help-file: /script/help/README.txt
+  loader-class: impl.load.Loader
+  programming-language:
+    name: Python
+    version: 2.7
+  target-OS:
+    - Windows
+    - Linux
+  target-DB: PostgreSQL
+  supported-files:
+    - format:
+        - txt
+      # convention -> CF-1.0
+      # source -> Nebraska, NOAA, etc
+      # series -> GHCN, etc
+      # file-name -> ghc.*\.nc
+      # year -> from to
+  # tags
+  dependencies:
+    - name: postgreSQL
+      type: DB
+    - name: psql
+      type: command
+    - name: python
+      type: command
+    - name: log4j-api-2.5.jar
+      type: jar
+    - name: log4j-core-2.5.jar
+      type: jar
+    - name: dataplugin.api_2.0.0.jar
+      type: jar
+  vendor: aherrera
