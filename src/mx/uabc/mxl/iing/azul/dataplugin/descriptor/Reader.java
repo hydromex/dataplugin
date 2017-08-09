@@ -1,4 +1,24 @@
 package mx.uabc.mxl.iing.azul.dataplugin.descriptor;
+/*
+    Copyright (C) 2017  Jesús Donaldo Osornio Hernández
+    Copyright (C) 2017  Luis Alejandro Herrera León
+    Copyright (C) 2017  Gabriel Alejandro López Morteo
+
+    This file is part of DataPlugin.
+
+    DataPlugin is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    DataPlugin is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with DataPlugin.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 import mx.uabc.mxl.iing.azul.dataplugin.logger.MessageMediator;
 import org.yaml.snakeyaml.Yaml;
@@ -11,14 +31,26 @@ import java.net.URLClassLoader;
 import java.util.Map;
 
 /**
- * Created by jdosornio on 29/10/16.
+ * Reader is the class in charge of loading the contents of configuration and descriptor files in memory.
+ * It can read the main application configuration file as well as any plugin descriptor file
+ *
+ * @author jdosornio
+ * @version %I%
  */
 public class Reader {
     private static Configuration config;
     private static final Yaml YAML = new Yaml();
     private static final String CONFIG_FILE = "/config.yaml";
 
-    //TODO: Create reader for XML descriptors too
+    /**
+     * This method reads the descriptor file of the given plugin file and loads it into memory.
+     *
+     * @param pluginFile File object representing the path of the plugin file or null in case of an error happening
+     *
+     * @return A {@link PluginDescriptor} instance representing the plugin descriptor read
+     *
+     * @throws IOException in case of an error happening while reading the plugin file or its descriptor.
+     */
     public static PluginDescriptor getPluginDescriptor(File pluginFile) throws IOException {
         final String PLUGIN_DESCRIPTOR_FILE = "desc.yaml";
         PluginDescriptor pluginDesc;
@@ -40,6 +72,13 @@ public class Reader {
         return pluginDesc;
     }
 
+    //TODO: Create reader for XML descriptors too
+
+    /**
+     * Returns an instance of the main application configuration file
+     *
+     * @return A {@link Configuration} instance of the main application configuration file.
+     */
     public static Configuration getConfiguration() {
         if (config == null) {
             config = new Configuration((Map)YAML.load(Reader.class

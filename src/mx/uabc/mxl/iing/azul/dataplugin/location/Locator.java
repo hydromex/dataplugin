@@ -1,4 +1,25 @@
 package mx.uabc.mxl.iing.azul.dataplugin.location;
+/*
+    Copyright (C) 2017  Jesús Donaldo Osornio Hernández
+    Copyright (C) 2017  Luis Alejandro Herrera León
+    Copyright (C) 2017  Gabriel Alejandro López Morteo
+
+    This file is part of DataPlugin.
+
+    DataPlugin is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    DataPlugin is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with DataPlugin.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 
 import mx.uabc.mxl.iing.azul.dataplugin.descriptor.Reader;
 import mx.uabc.mxl.iing.azul.dataplugin.logger.MessageMediator;
@@ -7,16 +28,18 @@ import java.io.File;
 import java.util.Arrays;
 
 /**
- * Created by jdosornio on 23/04/17.
+ * Locators function is to locate the available plugin files for the application to load.
+ *
+ * @author jdosornio
+ * @version %I%
  */
 public class Locator {
     private static final File PLUGIN_DIR = new File(Reader.getConfiguration().getPluginDir());
 
     /**
-     * Obtiene todos los archivos plugin del directorio de plugins. Estos archivos
-     * son los empaquetamientos de los plugins, asi se podra obtener los
-     * plugins que ya hayan sido registrados.
-     * @return Regresa el arreglo de archivos de plugin
+     * Gets all the plugin files stored in the application plugin directory.
+     *
+     * @return an array of the plugin files available in the application plugin directory
      */
     public static File[] getPluginFiles() {
         File[] result;
