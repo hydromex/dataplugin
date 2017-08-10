@@ -1,16 +1,35 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package mx.uabc.mxl.iing.azul.dataplugin.logger;
+/*
+    Copyright (C) 2017  Jesús Donaldo Osornio Hernández
+    Copyright (C) 2017  Luis Alejandro Herrera León
+    Copyright (C) 2017  Gabriel Alejandro López Morteo
+
+    This file is part of DataPlugin.
+
+    DataPlugin is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    DataPlugin is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with DataPlugin.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+
 /**
+ * Class used for logging application messages of different levels of importance.
+ * Used both by the main application and a plugin application.
  *
- * @author Alex
+ * @author aherrera
+ * @version %I%
  */
 public class MessageMediator {
     
@@ -22,11 +41,11 @@ public class MessageMediator {
     public final static int WARNING_MESSAGE = 2;
     
     /**
-     * Este metodo envia un mensaje de un plugin para mostrar su retroalimentacion
-     * sobre su ejecucion al PluginManager. 
-     * @param pluginName Nombre del plugin que envia el mensaje.
-     * @param message Mensaje que envia el plugin.
-     * @param messageType Tipo de error del mensaje
+     * This method sends a plugin message to show the feedback about its execution
+     *
+     * @param pluginName Plugin name that sends the message
+     * @param message Message sent
+     * @param messageType Message error type
      */
     public static void sendMessage(String pluginName, String message,
         int messageType){
@@ -49,18 +68,19 @@ public class MessageMediator {
     }
     
     /**
-     * Este metodo envia un mensaje sin especificar la fuente del mensaje.
-     * @param message Mensaje a enviar
-     * @param messageType Tipo de mensaje
+     * This method sends a message without specifying the message source
+     *
+     * @param message Message to send
+     * @param messageType Message type
      */
     public static void sendMessage(String message, int messageType){
         sendMessage("", message, messageType);
     }
     
     /**
-     * Este metodo envia un mensaje sin especificar la fuente del mensaje y pre-
-     * determinadamente sera de tipo informacion.
-     * @param message Mensaje a enviar.
+     * This method sends an information type message without specifying its source
+     *
+     * @param message Message to send
      */
     public static void sendMessage(String message){
         sendMessage("", message, INFO_MESSAGE);

@@ -1,4 +1,24 @@
 package mx.uabc.mxl.iing.azul.dataplugin.util;
+/*
+    Copyright (C) 2017  Jesús Donaldo Osornio Hernández
+    Copyright (C) 2017  Luis Alejandro Herrera León
+    Copyright (C) 2017  Gabriel Alejandro López Morteo
+
+    This file is part of DataPlugin.
+
+    DataPlugin is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    DataPlugin is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with DataPlugin.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 import mx.uabc.mxl.iing.azul.dataplugin.logger.MessageMediator;
 
@@ -7,10 +27,23 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 /**
- * Created by jdosornio on 14/05/17.
+ * Utility class for working with system processes
+ *
+ * @author jdosornio
+ * @version %I%
  */
 public class ProcessUtil {
 
+    /**
+     * Utility method to execute a system process given a command and optional arguments.
+     *
+     * @param command An array of command and optional arguments to be executed in the system
+     *
+     * @return true in case of successful execution, false otherwise
+     *
+     * @throws IOException in case of an error while executing the process
+     * @throws InterruptedException in case of the process being interrupted
+     */
     public static boolean executeProcess(String ... command) throws IOException,
             InterruptedException {
         if (command == null || command.length == 0) {

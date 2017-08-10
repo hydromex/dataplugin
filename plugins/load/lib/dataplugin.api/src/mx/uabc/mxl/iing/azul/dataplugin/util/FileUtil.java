@@ -1,4 +1,24 @@
 package mx.uabc.mxl.iing.azul.dataplugin.util;
+/*
+    Copyright (C) 2017  Jesús Donaldo Osornio Hernández
+    Copyright (C) 2017  Luis Alejandro Herrera León
+    Copyright (C) 2017  Gabriel Alejandro López Morteo
+
+    This file is part of DataPlugin.
+
+    DataPlugin is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    DataPlugin is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with DataPlugin.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 import java.io.File;
 import java.io.IOException;
@@ -12,6 +32,13 @@ import java.util.Scanner;
 
 import mx.uabc.mxl.iing.azul.dataplugin.logger.MessageMediator;
 
+
+/**
+ * Utility class for working with files, URLs and streams
+ *
+ * @author jdosornio
+ * @version %I%
+ */
 public class FileUtil {
 	
 	/**
@@ -152,6 +179,13 @@ public class FileUtil {
 		return (ok == 0);
 	}
 
+    /**
+     * Deletes the given directory
+     *
+     * @param dir a file object representing the directory to delete
+     *
+     * @return true if deleted, false otherwise
+     */
 	public static boolean deleteDir(File dir) {
         boolean ok = false;
 
@@ -181,6 +215,15 @@ public class FileUtil {
         return ok;
     }
 
+    /**
+     * Utility method to transform an input stream to a String object.
+     *
+     * @param is the input stream
+     *
+     * @return a string with the contents of the input stream (must fit into memory) or null, in case is = null
+     *
+     * @throws IOException in case the input stream couldn't be read
+     */
 	public static String streamToString(InputStream is) throws IOException {
         if(is == null) {
             MessageMediator.sendMessage("InputStream is null", MessageMediator.ERROR_MESSAGE);
