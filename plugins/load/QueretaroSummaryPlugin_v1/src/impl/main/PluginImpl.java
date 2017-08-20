@@ -66,13 +66,16 @@ public class PluginImpl extends Plugin {
     	String endDate = "";
     	
     	if(args != null){
-	    	if(args.length > 1 && !isValidDate(startDate)){
+    		//Get the date range and check if is valid
+        	startDate = (args.length > 0) ? args[0] : "";
+        	endDate = (args.length > 1) ? args[1] : "";
+	    	if(!startDate.isEmpty() && !isValidDate(startDate)){
 	    		MessageMediator.sendMessage(getName(), "The date argument has to be in YYYY-MM-DD format",
 	    				MessageMediator.ERROR_MESSAGE);
 	    		startDate = "";
 	    	}
 	    	
-	    	if(args.length > 2 && !isValidDate(endDate)){
+	    	if(!endDate.isEmpty() && !isValidDate(endDate)){
 	    		MessageMediator.sendMessage(getName(), "The date argument has to be in YYYY-MM-DD format",
 	    				MessageMediator.ERROR_MESSAGE);
 	    		endDate = "";
@@ -85,14 +88,7 @@ public class PluginImpl extends Plugin {
 	    	
 	    	//Create command like
 	    	//python [pluginDir]/licor_summary.py [pluginDir] <<optional date range>>
-            List<String> command = Arrays.asList(PYTHON_COMMAND, copiedScript.getPath(), outputDir.getPath());
-            //Add if args present
-            if (!startDate.isEmpty()) {
-                command.add(startDate);
-            }
-            if (!endDate.isEmpty()) {
-                command.add(endDate);
-            }
+            List<String> command = Arrays.asList(PYTHON_COMMAND, copiedScript.getPath(), pluginDir.getPath(), startDate, endDate);
 
             //Log
 	    	MessageMediator.sendMessage(getName(), "Executing " +
@@ -101,7 +97,8 @@ public class PluginImpl extends Plugin {
             ProcessUtil.executeProcess(command.toArray(new String[command.size()]));
 
             //filename = 'summary_report_' + startDate + '_' + endDate + '.txt'
-	    	File dataFile = new File(pluginDir, "'summary_report_" + startDate + "_" + endDate + ".txt");
+	    	File dataFile = new File(pluginDir, "data.json");
+	    	MessageMediator.sendMessage(getName(), dataFile.exists() + "", MessageMediator.INFO_MESSAGE);
 	    	
 	    	ArrayList<String> processedFiles = new ArrayList<>();
 	    	if(dataFile.exists())

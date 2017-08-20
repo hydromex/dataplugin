@@ -3,8 +3,8 @@ plugin:
   version: 1.0.0
   description: >
     Plugin para la descarga de archivos de resumen provenientes de
-    la página fluxsuite.com, el resumen de los datos proviene de la
-    estación EddyPro localizada en Bernal, Queretaro. 
+    la pagina fluxsuite.com, el resumen de los datos proviene de la
+    estacion EddyPro localizada en Bernal, Queretaro
   script:
     - /script/licor_summary.py
   help-file: /script/help/README.txt
@@ -15,7 +15,7 @@ plugin:
   target-OS:
     - Windows
     - Linux
-  target-DB: PostgreSQL
+  target-DB: MongoDB
   supported-files:
     - format:
         - txt
@@ -26,10 +26,8 @@ plugin:
       # year -> from to
   # tags
   dependencies:
-    - name: postgreSQL
+    - name: MongoDB
       type: DB
-    - name: psql
-      type: command
     - name: python
       type: command
     - name: log4j-api-2.5.jar
@@ -38,4 +36,8 @@ plugin:
       type: jar
     - name: dataplugin.api_2.0.0.jar
       type: jar
+    - name: pymongo
+      type: python-module
+    - name: ujson
+      type: python-module
   vendor: aherrera

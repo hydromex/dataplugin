@@ -47,12 +47,13 @@ if os.path.isdir(outputDirectory):
         print e
         sys.exit(1)
     if res.status_code == 200:
-        filename = 'summary_report_' + startDate + '_' + endDate + '.json'
+        filename = 'data.json'
+        # unitfilename = 'units.json'
         fileWithDir = os.path.join(outputDirectory, filename)
+        # unitFileWithDir = os.path.join(outputDirectory, unitfilename)
         with open(fileWithDir, 'w') as jsonfile:
             headers = []
             units = []
-            keys = ['value', 'unit']
             values = []
             # sizes = []
             # types = []
@@ -72,6 +73,10 @@ if os.path.isdir(outputDirectory):
                                 headers = values
                             elif not units:
                                 units = list(map((lambda x: x[1:-1] if x not in ['DATAU', '186'] else x), values))
+                                # json = dict(zip(headers, units))
+                                # with  open(unitFileWithDir, 'w') as unitfile:
+                                #     ujson.dump(json, unitfile)
+                                #     unitfile.write('\n')
                             else:
                                 for i, v in enumerate(values):
                                     x = isfloat(v)
@@ -99,17 +104,19 @@ if os.path.isdir(outputDirectory):
                                     #     types.append(t)
                                     # elif s > sizes[i]:
                                     #     sizes[i] = s
-                                groups = zip(values, units)
-                                json = [dict(zip(keys,group)) for group in groups]
-                                json = dict(zip(headers, json))
+                                json = dict(zip(headers, values))
                                 ujson.dump(json, jsonfile)
                                 jsonfile.write('\n')
                             values = []
-            # json = {"table":"data", 'variables': []}
+            # json = [{"table":"data", 'variables': []},
+            #     {"table":"units", "variables":[]}]
             # for i, h in enumerate(headers):
             #     var = {"name": h, 'size': sizes[i], 'type': types[i],
             #     'description': "variable: " + h + " in unit " + units[i]}
-            #     json['variables'].append(var)
+            #     json[0]['variables'].append(var)
+            #     var = {"name": h, 'size': sys.getsizeof(units[i]), 'type': 'string',
+            #         'description': "Units used by variable: " + h}
+            #     json[1]['variables'].append(var)
             # ujson.dump(json, jsonfile)
         print("File created in: " + fileWithDir)
 else:

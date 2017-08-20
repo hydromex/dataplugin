@@ -13,9 +13,10 @@
   </head>
   <body>
   $END$
-  <!--<script>
-          jQuery.post( "http://localhost:8080/dataplugin/rs/p/exec",
-              { name: "QueretaroPlugin", args: ['/home/jdosornio/Licornuevo/raw', '/home/jdosornio/Licornuevo/results'].join(',')} );
-  </script> -->
+  <script>
+          jQuery.post( "http://148.231.90.7:8080/dataplugin/rs/p/exec",
+              { name: "QueretaroSummaryPlugin", args: ""} );
+              //QueretaroSummaryPlugin
+  </script>
   </body>
 </html>
