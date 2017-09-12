@@ -40,6 +40,8 @@ import java.util.Map;
 public class Reader {
     private static Configuration config;
     private static final Yaml YAML = new Yaml();
+    //Should be read from an arbitrary path to avoid having to redeploy the application each time the configuration is
+    //changed
     private static final String CONFIG_FILE = "/config.yaml";
 
     /**

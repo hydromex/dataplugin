@@ -32,6 +32,13 @@ public class Configuration {
     private final Map CONFIG_ROOT;
     private static final String CONFIG_KEY = "config";
     private static final String PLUGIN_DIR = "plugin-dir";
+    private static final String CATALOG_DATABASE = "catalog-database";
+    private static final String MONGO_USERNAME = "mongodb-username";
+    private static final String MONGO_PASSWORD = "mongodb-password";
+    private static final String MONGO_HOST = "mongodb-host";
+    private static final String MONGO_PORT = "mongodb-port";
+    private static final String MONGO_AUTH_DB = "mongodb-authdb";
+
 
     Configuration(Map config) {
         CONFIG_ROOT = (Map) config.get(CONFIG_KEY);
@@ -40,6 +47,30 @@ public class Configuration {
 
     public String getPluginDir() {
         return CONFIG_ROOT.get(PLUGIN_DIR).toString();
+    }
+
+    public String getCatalogDatabase() {
+        return CONFIG_ROOT.get(CATALOG_DATABASE).toString();
+    }
+
+    public String getMongoUsername() {
+        return CONFIG_ROOT.get(MONGO_USERNAME).toString();
+    }
+
+    public String getMongoPassword() {
+        return CONFIG_ROOT.get(MONGO_PASSWORD).toString();
+    }
+
+    public String getMongoHost() {
+        return CONFIG_ROOT.get(MONGO_HOST).toString();
+    }
+
+    public int getMongoPort() {
+        return Integer.parseInt(CONFIG_ROOT.get(MONGO_PORT).toString());
+    }
+
+    public String getMongoAuthDb() {
+        return CONFIG_ROOT.get(MONGO_AUTH_DB).toString();
     }
 
 }

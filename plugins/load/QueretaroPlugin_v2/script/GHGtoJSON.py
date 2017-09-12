@@ -1,5 +1,7 @@
 #! /usr/bin/python
 
+import requests
+
 import sys
 import os
 import zipfile
@@ -10,6 +12,12 @@ import ujson
 from datetime import datetime
 from os import path
 from math import isinf
+
+PLUGIN_NAME = 'QueretaroPlugin'
+PLUGIN_VERSION =  '2.0.0'
+DB = 'ghcn'
+
+db_meta_url = 'http://localhost:8080/dataplugin/rs/meta/register-db'
 
 def extractghg(filename):
 	starttime = time.time()
@@ -254,6 +262,10 @@ for filename in resultfiles:
 
 	elapsedtime = time.time() - starttime
 	print "File " + filename + " time: " + str(elapsedtime)
+
+#Insert/Update database metadata
+requests.post(db_meta_url, data = {'db-name': DB, 'plugin-name': PLUGIN_NAME,
+                                   'plugin-version': PLUGIN_VERSION, 'db-schema': '{}'})
 
 elapsedtime = time.time() - totaltime
 print "Total time: " + str(elapsedtime)

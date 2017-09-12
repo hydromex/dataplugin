@@ -64,9 +64,9 @@ public abstract class Plugin {
         return getDescriptor().getDescription();
     }
 
-    //maybe other return type (collection of values)
-    public String getMeta() {
-        return "";
+
+    public PluginDescriptor getMetadata() {
+        return getDescriptor();
     }
 
     /**

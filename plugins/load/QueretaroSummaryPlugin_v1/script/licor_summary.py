@@ -12,10 +12,16 @@ def isfloat(value):
   except ValueError:
     return False
 
+#Must be the same as the descriptor file
+PLUGIN_NAME = 'QueretaroSummaryPlugin'
+PLUGIN_VERSION = '1.0.0'
+
 login_url = 'https://app1.fluxsuite.com/login'
 download_url = 'https://app1.fluxsuite.com/stations/26/reports/summary'
 firstDate = '2016-08-18'
 lastDate = datetime.datetime.today().strftime('%Y-%m-%d')
+
+db_meta_url = 'http://localhost:8080/dataplugin/rs/meta/register-db'
 
 #startDate=2017-06-01&endDate=2017-06-02'
 if len(sys.argv) > 3:
@@ -118,6 +124,11 @@ if os.path.isdir(outputDirectory):
             #         'description': "Units used by variable: " + h}
             #     json[1]['variables'].append(var)
             # ujson.dump(json, jsonfile)
+
+            #Insert/Update database metadata
+            requests.post(db_meta_url,
+            data = {'db-name': 'queretarosummary', 'plugin-name': PLUGIN_NAME,
+            'plugin-version': PLUGIN_VERSION, 'db-schema': '{}'})
         print("File created in: " + fileWithDir)
 else:
     print("Error: Directory doesn't exist")

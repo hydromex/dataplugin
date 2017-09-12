@@ -13,10 +13,11 @@
   </head>
   <body>
   $END$
-  <script>
-          jQuery.post( "http://148.231.90.7:8080/dataplugin/rs/p/exec",
+
+  <!--<script>
+          jQuery.post( "http://localhost:8080/dataplugin/rs/p/exec",
               { name: "QueretaroSummaryPlugin", args: ""} );
-              //QueretaroSummaryPlugin
-  </script>
+  </script>-->
+
   </body>
 </html>

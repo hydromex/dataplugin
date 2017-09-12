@@ -31,7 +31,7 @@ import java.util.Map;
  * @version %I%
  */
 public class PluginDescriptor {
-    private final Map DESCRIPTOR;
+    private final Map<String, Object> DESCRIPTOR;
 
     private static final String PLUGIN_KEY = "plugin";
     private static final String NAME_KEY = "name";
@@ -43,12 +43,12 @@ public class PluginDescriptor {
     private static final String TARGET_DB_KEY = "target-DB";
 
 
-    public PluginDescriptor(Map desc) {
+    public PluginDescriptor(Map<String, Object> desc) {
         //later validation of obligatory fields
         DESCRIPTOR = desc;
     }
 
-    private Map getPluginRoot() {
+    private Map<String, Object> getPluginRoot() {
         return (Map)DESCRIPTOR.get(PLUGIN_KEY);
     }
 
@@ -78,5 +78,9 @@ public class PluginDescriptor {
 
     public String getTargetDB() {
         return getPluginRoot().get(TARGET_DB_KEY).toString();
+    }
+
+    public Map<String, Object> asMap() {
+        return getPluginRoot();
     }
 }

@@ -20,6 +20,7 @@ package mx.uabc.mxl.iing.azul.dataplugin.registry;
     along with DataPlugin.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import mx.uabc.mxl.iing.azul.dataplugin.datastore.CatalogManager;
 import mx.uabc.mxl.iing.azul.dataplugin.execution.Executor;
 import mx.uabc.mxl.iing.azul.dataplugin.load.Loader;
 import mx.uabc.mxl.iing.azul.dataplugin.location.Locator;
@@ -118,6 +119,8 @@ public class PluginManager {
     public static void executePlugin(String pluginName, String ... args) {
         Plugin plugin = getPlugin(pluginName);
         Executor.execute(plugin, args);
+        //Register plugin in the catalog, even if the execution is not finished
+        CatalogManager.registerPlugin(plugin);
     }
 
     /**
