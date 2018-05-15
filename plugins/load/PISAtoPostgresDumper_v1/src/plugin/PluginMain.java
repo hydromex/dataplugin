@@ -26,7 +26,7 @@ public class PluginMain extends Plugin {
     private String helpContent;
 
 
-    public PluginMain(PluginDescriptor descriptor, CopyStrategy strategy, URL ... files) {
+     public PluginMain(PluginDescriptor descriptor, CopyStrategy strategy, URL ... files) {
         DESCRIPTOR = descriptor;
         SCRIPT = files[0];
         HELP = files[1];

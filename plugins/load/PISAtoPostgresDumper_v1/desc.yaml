@@ -8,9 +8,9 @@ plugin:
     - /script/CSVDump.py
   help-file: /script/help/README.txt
   loader-class: plugin.Loader
-  programming-language:
-    name: Python
-    version: 3
+  programming-languages:
+    - name: Python
+      version: 3
   target-OS:
     - Linux
     - Windows

@@ -38,6 +38,11 @@ public class Configuration {
     private static final String MONGO_HOST = "mongodb-host";
     private static final String MONGO_PORT = "mongodb-port";
     private static final String MONGO_AUTH_DB = "mongodb-authdb";
+    private static final String PG_USERNAME = "pg-username";
+    private static final String PG_PASS = "pg-password";
+    private static final String PG_HOST = "pg-host";
+    private static final String PG_PORT = "pg-port";
+    private static final String PG_GRID_DB = "pg-raster-db";
 
 
     Configuration(Map config) {
@@ -71,6 +76,26 @@ public class Configuration {
 
     public String getMongoAuthDb() {
         return CONFIG_ROOT.get(MONGO_AUTH_DB).toString();
+    }
+
+    public String getPostgresUser() {
+        return CONFIG_ROOT.get(PG_USERNAME).toString();
+    }
+
+    public String getPostgresPass() {
+        return CONFIG_ROOT.get(PG_PASS).toString();
+    }
+
+    public String getPostgresHost() {
+        return CONFIG_ROOT.get(PG_HOST).toString();
+    }
+
+    public int getPostgresPort() {
+        return Integer.parseInt(CONFIG_ROOT.get(PG_PORT).toString());
+    }
+
+    public String getPostgresGridDB() {
+        return CONFIG_ROOT.get(PG_GRID_DB).toString();
     }
 
 }

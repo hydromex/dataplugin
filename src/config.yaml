@@ -25,5 +25,10 @@ config:
   mongodb-authdb: admin
   mongodb-host: localhost
   mongodb-port: 27017
+  pg-username: postgres
+  pg-password: postgres
+  pg-host: localhost
+  pg-port: 5432
+  pg-raster-db: griddb
   # log-file ->
   # landing-area ->

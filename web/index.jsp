@@ -9,8 +9,10 @@
 
   <!--<script>
           jQuery.post( "http://localhost:8080/dataplugin/rs/p/exec",
-              { name: "QueretaroSummaryPlugin", args: ""} );
+              { name: "TRMMDumper", args: ["/home/jdosornio/Documents/iing/Maestria/Nebraska/DATA/TRMM (TMPA-RT)/raw_data",
+                  "precipitation","20110101","20120101"].join()} );
   </script>-->
 
+  Test
   </body>
 </html>

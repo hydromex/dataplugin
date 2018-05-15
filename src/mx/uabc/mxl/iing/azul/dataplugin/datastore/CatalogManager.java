@@ -37,7 +37,7 @@ public class CatalogManager {
         //Almost the same logic as plugin, just that, in this case, the field updated_at is updated
         Document db = findDatabase(database.getString(DATABASE_NAME_K));
         if (db != null) {
-
+            //Later change to allow modification of the schema (always insert a new schema, just getting the created_at val
             //Update updated_at field
             MongoDAO.update(Reader.getConfiguration().getCatalogDatabase(), DATABASE_CATALOG,
                     new Document(DATABASE_NAME_K, db.getString(DATABASE_NAME_K)),
@@ -45,8 +45,8 @@ public class CatalogManager {
             MessageMediator.sendMessage("Updated database: [" + db.getString(DATABASE_NAME_K) + "]");
 
         } else {
-            //If the database does not exists, add a created at field with the current timestamp.
-            //Before inserting, create a created_at field and add the id of the plugin...
+            //If the database does not exists, add a created_at field with the current timestamp.
+            //Before inserting, create a created_by field and add the id of the plugin...
             long currTime = System.currentTimeMillis();
             Document pluginMeta = findPlugin(pluginName, pluginVersion);
 
