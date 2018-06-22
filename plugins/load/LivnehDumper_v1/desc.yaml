@@ -1,0 +1,42 @@
+plugin:
+  name: LivnehDumper
+  version: 1.0.0
+  description: >
+    Plugin to store the Livneh NetCDF dataset in PostgreSQL PostGIS Raster,
+    for the wanted spatial and temporal space, (for one variable) version 1
+  script:
+    - /script/dumpCF.py
+    - /script/loadRaster
+    - /script/ncUtils.py
+  help-file: /script/help/README.txt
+  loader-class: plugin.Loader
+  programming-languages:
+    - name: Python
+      version: 3
+    - name: Bash
+      version: 4.3
+  target-OS:
+    - Linux
+  target-DB: PostgreSQL
+  supported-files:
+    - format:
+        - nc
+        - nc4
+  dependencies:
+    - name: PostgreSQL
+      type: DB
+    - name: psql
+      type: command
+    - name: python3
+      type: command
+    - name: raster2pgsql
+      type: command
+    - name: bash
+      type: command
+    - name: log4j-api-2.5.jar
+      type: jar
+    - name: log4j-core-2.5.jar
+      type: jar
+    - name: dataplugin.api_2.0.0.jar
+      type: jar
+  vendor: jdosornio

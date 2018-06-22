@@ -1,0 +1,51 @@
+#!/bin/bash
+
+#Script to do the actual importing of netCDF raster data into PostgreSQL
+
+#Get the number of bands or timesteps to store, repeat the process this number
+#of times...
+
+RASTER_FILE=$1
+#LOADER_EXE=$2
+GIS_DB=$2
+RASTER_TABLE=$3
+RASTER_COL=$4
+T_WIDTH=$5
+T_HEIGHT=$6
+NUM_BANDS=$(python3 -c 'from netCDF4 import Dataset; print(len(Dataset("'$RASTER_FILE'").variables["time"]));')
+PSQL_COMMAND="psql -U postgres -h localhost -d $GIS_DB"
+TMP_RASTER_TBL=$RASTER_TABLE'_temp'
+
+echo 'Raster NetCDF file to load: ' $RASTER_FILE
+echo 'Number of bands (timesteps) found in this file: ' $NUM_BANDS
+#echo 'Path to the raster2pgsql script: ' $LOADER_EXE
+echo 'Name of the PostGIS database to load the raster data into: ' $GIS_DB
+echo 'Name of the PostGIS table to load the raster data to: ' $RASTER_TABLE
+echo 'Name of the PostGIS raster column: ' $RASTER_COL
+
+#CREATE TABLE
+echo 'DROP TABLE IF EXISTS '$TMP_RASTER_TBL'; CREATE TABLE '$TMP_RASTER_TBL' (id SERIAL PRIMARY KEY, '$RASTER_COL' raster, datetime TIMESTAMP);' | $PSQL_COMMAND
+
+for ((i=1;i<=NUM_BANDS;i++))
+do
+   raster2pgsql -a -b $i -Y -f $RASTER_COL -e $RASTER_FILE $TMP_RASTER_TBL | $PSQL_COMMAND
+done
+
+#Now execute python code to update the datetime column with the missing data...
+SQL_UPDATE=$(python3 -c "from netCDF4 import Dataset, num2date; time = Dataset('"$RASTER_FILE"').variables['time']; "\
+"print('UPDATE "$TMP_RASTER_TBL" AS tmp SET datetime = ts.dt::timestamp FROM (VALUES ', end = ''); "\
+"print(', '.join(['(' + str(i) + ', \'' + str(d) + '\')' "\
+"for i, d in enumerate(num2date(time[:], time.units), start = 1)])); "\
+"print(') AS ts(id, dt) WHERE tmp.id = ts.id;')")
+
+#Execute remaining SQL instructions...
+#Create main raster table to hold the data in tiles...
+#Insert tiled data from temp table to main table
+#DROP Temp table
+#Create indexes on main table
+echo 'BEGIN;' $SQL_UPDATE 'DROP TABLE IF EXISTS '$RASTER_TABLE'; CREATE TABLE '$RASTER_TABLE\
+' (tid SERIAL PRIMARY KEY, '$RASTER_COL' raster, datetime TIMESTAMP); '\
+'INSERT INTO '$RASTER_TABLE'('$RASTER_COL', datetime) SELECT ST_Tile('\
+$RASTER_COL', '$T_WIDTH', '$T_HEIGHT'), datetime FROM '$TMP_RASTER_TBL' GROUP BY id; DROP TABLE '$TMP_RASTER_TBL\
+'; CREATE INDEX '$RASTER_TABLE'_dt_idx ON '$RASTER_TABLE'(datetime); CLUSTER '$RASTER_TABLE' USING '$RASTER_TABLE'_dt_idx;'\
+'CREATE INDEX ON '$RASTER_TABLE' USING GIST(ST_ConvexHull('$RASTER_COL')); COMMIT; VACUUM; ANALYZE;' | $PSQL_COMMAND
