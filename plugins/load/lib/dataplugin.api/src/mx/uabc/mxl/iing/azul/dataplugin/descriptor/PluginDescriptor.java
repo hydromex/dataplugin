@@ -43,43 +43,93 @@ public class PluginDescriptor {
     private static final String TARGET_DB_KEY = "target-DB";
 
 
+    /**
+     * Create the PluginDescriptor with the given map
+     *
+     * @param desc the map object
+     */
     public PluginDescriptor(Map<String, Object> desc) {
         //later validation of obligatory fields
         DESCRIPTOR = desc;
     }
 
+    /**
+     * Shortcut method for getting the plugin root from the descriptor
+     *
+     * @return a map object representing the plugin root
+     */
     private Map<String, Object> getPluginRoot() {
         return (Map)DESCRIPTOR.get(PLUGIN_KEY);
     }
 
+    /**
+     * Get the plugin name
+     *
+     * @return the name string
+     */
     public String getName() {
         return getPluginRoot().get(NAME_KEY).toString();
     }
 
+    /**
+     * Get the plugin version
+     *
+     * @return the version string
+     */
     public String getVersion() {
         return getPluginRoot().get(VERSION_KEY).toString();
     }
 
+    /**
+     * Get this plugin description text
+     *
+     * @return the description string
+     */
     public String getDescription() {
         return getPluginRoot().get(DESCRIPTION_KEY).toString();
     }
 
+    /**
+     * Get the plugin help file path
+     *
+     * @return the path as a string
+     */
     public String getHelp() {
         return getPluginRoot().get(HELP_KEY).toString();
     }
 
+    /**
+     * Get the full qualified name of this plugin loader class
+     *
+     * @return class name as a string
+     */
     public String getLoaderClass() {
         return getPluginRoot().get(LOADER_CLASS_KEY).toString();
     }
 
+    /**
+     * Get a list with the plugin script(s) path(s)
+     *
+     * @return list of strings
+     */
     public List<String> getScripts() {
         return (List)getPluginRoot().get(SCRIPT_KEY);
     }
 
+    /**
+     * Get the name of the DBMS that this plugins loads data into
+     *
+     * @return the name of the DBMS
+     */
     public String getTargetDB() {
         return getPluginRoot().get(TARGET_DB_KEY).toString();
     }
 
+    /**
+     * Get this PluginDescriptor metadata as a map object
+     *
+     * @return a map object
+     */
     public Map<String, Object> asMap() {
         return getPluginRoot();
     }

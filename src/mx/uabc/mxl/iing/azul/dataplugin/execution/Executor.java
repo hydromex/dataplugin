@@ -18,7 +18,7 @@ package mx.uabc.mxl.iing.azul.dataplugin.execution;
 
     You should have received a copy of the GNU General Public License
     along with DataPlugin.  If not, see <http://www.gnu.org/licenses/>.
- */
+*/
 
 import mx.uabc.mxl.iing.azul.dataplugin.logger.MessageMediator;
 import mx.uabc.mxl.iing.azul.dataplugin.plugin.Plugin;

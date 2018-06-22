@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import mx.uabc.mxl.iing.azul.dataplugin.plugin.Plugin;
 
@@ -124,16 +125,23 @@ public class PluginManager {
     }
 
     /**
-     * Gets the names of all the registered plugins in the PluginManager
+     * Gets the name and version of all the registered plugins in the PluginManager
      *
-     * @return a list of strings containing the registered plugin names
+     * @return a list of maps containing the registered plugin names and versions as [{name, version}]
      */
-    public static List<String> listPlugins() {
-        List<String> pluginNames = new ArrayList<>();
+    public static List<Map<String, String>> listPlugins() {
+        List<Map<String, String>> plugins = new ArrayList<>();
 
-        REGISTRY.forEach((name, plugin) -> pluginNames.add(name));
+        REGISTRY.forEach((name, plugin) -> {
+            Map<String, String> p = new HashMap<>();
 
-        return pluginNames;
+            p.put("name", name);
+            p.put("version", plugin.getVersion());
+
+            plugins.add(p);
+        });
+
+        return plugins;
     }
 
     /**

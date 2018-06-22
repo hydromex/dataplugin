@@ -18,7 +18,7 @@ package mx.uabc.mxl.iing.azul.dataplugin.util;
 
     You should have received a copy of the GNU General Public License
     along with DataPlugin.  If not, see <http://www.gnu.org/licenses/>.
- */
+*/
 
 import mx.uabc.mxl.iing.azul.dataplugin.logger.MessageMediator;
 
@@ -67,34 +67,28 @@ public class ProcessUtil {
         //here either error or success, but process already finished (maybe) and streams closed (maybe)
         int res = process.waitFor();
 
-        //Not necessary because errorStream redirection
+        return (res == 0);
+    }
+
+//    public static String getProcessOutput(String ... command) throws IOException, InterruptedException {
+//        String procOut;
+//
+//        if (command == null || command.length == 0) {
+//            MessageMediator.sendMessage("command is empty!", MessageMediator.ERROR_MESSAGE);
+//            return null;
+//        }
+//
+//        Process process = new ProcessBuilder().command(command).start();
+//
+//        procOut = FileUtil.streamToString(process.getInputStream());
+//
+//        int res = process.waitFor();
+//
 //        if(res != 0) {
 //            String error = FileUtil.streamToString(process.getErrorStream());
 //            MessageMediator.sendMessage("error output:\n" + error, MessageMediator.ERROR_MESSAGE);
 //        }
-
-        return (res == 0);
-    }
-
-    public static String getProcessOutput(String ... command) throws IOException, InterruptedException {
-        String procOut;
-
-        if (command == null || command.length == 0) {
-            MessageMediator.sendMessage("command is empty!", MessageMediator.ERROR_MESSAGE);
-            return null;
-        }
-
-        Process process = new ProcessBuilder().command(command).start();
-
-        procOut = FileUtil.streamToString(process.getInputStream());
-
-        int res = process.waitFor();
-
-        if(res != 0) {
-            String error = FileUtil.streamToString(process.getErrorStream());
-            MessageMediator.sendMessage("error output:\n" + error, MessageMediator.ERROR_MESSAGE);
-        }
-
-        return procOut;
-    }
+//
+//        return procOut;
+//    }
 }

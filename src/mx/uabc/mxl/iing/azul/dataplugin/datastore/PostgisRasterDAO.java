@@ -1,4 +1,24 @@
 package mx.uabc.mxl.iing.azul.dataplugin.datastore;
+/*
+    Copyright (C) 2018  Jesús Donaldo Osornio Hernández
+    Copyright (C) 2018  Luis Alejandro Herrera León
+    Copyright (C) 2018  Gabriel Alejandro López Morteo
+
+    This file is part of DataPlugin.
+
+    DataPlugin is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    DataPlugin is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with DataPlugin.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 import mx.uabc.mxl.iing.azul.dataplugin.descriptor.Reader;
 import mx.uabc.mxl.iing.azul.dataplugin.logger.MessageMediator;
@@ -13,6 +33,13 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.Date;
 
+/**
+ * This class is a direct implementation of the RasterDataManager interface. It is used to provide the required
+ * functionality through the PostgreSQL DBMS and its PostGIS extension for raster data storage
+ *
+ * @author jdosornio
+ * @version %I%
+ */
 public class PostgisRasterDAO implements RasterDataManager {
     //TODO: Use connection pooling
     private static Connection PG_CON;
@@ -33,10 +60,21 @@ public class PostgisRasterDAO implements RasterDataManager {
         }
     }
 
+    /**
+     * Creates a new PostgisRasterDAO instance
+     */
     PostgisRasterDAO() {
 
     }
 
+    /**
+     * Closes the resources associated to a SQL query
+     *
+     * @param ps prepared statement, may be null
+     * @param rs result set, may be null
+     *
+     * @throws SQLException if there's an error with the operation
+     */
     private static void close(PreparedStatement ps, ResultSet rs) throws SQLException {
         if (ps != null) {
             ps.close();
@@ -46,6 +84,15 @@ public class PostgisRasterDAO implements RasterDataManager {
         }
     }
 
+    /**
+     * This is a convenience method to transform a ResultSet object to a Map object
+     *
+     * @param query the query to run
+     *
+     * @return the query result as a map object
+     *
+     * @throws SQLException if there's an error
+     */
     private static Map<String, Object> resultSetToMap(String query) throws SQLException {
 
         PreparedStatement ps = PG_CON.prepareStatement(query);
@@ -156,6 +203,19 @@ public class PostgisRasterDAO implements RasterDataManager {
         return null;
     }
 
+    /**
+     * This is a utility method used to dynamically construct a PostgreSQL query with the specified constraints
+     *
+     * @param table the PostgreSQL table name
+     * @param rasterCol the table raster column name
+     * @param startTime the starting date to be used in the query, may be null
+     * @param endTime the ending date to be used in the query, may be null
+     * @param withinPolygon the bounding polygon to be used in the query, may be null
+     * @param outputFormat the output format requested, default: raw
+     * @param aggOp the aggregation operation, default: mean
+     *
+     * @return a string containing the generated PostgreSQL query
+     */
     //Get raster data...
     //String polygon could be actual polygon data type. But not needed for now
     private static String getSpatioTemporalQuery(String table, String rasterCol, LocalDateTime startTime,
@@ -167,10 +227,22 @@ public class PostgisRasterDAO implements RasterDataManager {
             return null;
         }
 
-        //Later validate if valid aggregate operation...
-        aggOp = (aggOp != null && !aggOp.isEmpty()) ? ", '" + aggOp + "'" : "";
+        final Set<String> VALID_AGG_OPS = new HashSet<>(Arrays.asList("LAST", "FIRST", "MIN", "MAX", "COUNT",
+                "SUM", "MEAN", "RANGE"));
+        //Instead of also validating the output format, is better to just let java catch the exception at query time
+        //but it's okay to just validate this case:
+        if(outputFormat != null && outputFormat.equalsIgnoreCase("raw")) {
+            outputFormat = null;
+        }
 
-        String baseQuery = "SELECT ST_Union(" + rasterCol + ") FROM " + table /*+ " GROUP BY " + TIME_COL +
+        //Validate if valid aggregate operation...
+        if(aggOp != null && !VALID_AGG_OPS.contains(aggOp.toUpperCase())) {
+            aggOp = null;
+        }
+
+        aggOp = (aggOp != null) ? ", '" + aggOp + "'" : "";
+
+        String baseQuery = "SELECT ST_Union(" + rasterCol + aggOp + ") FROM " + table /*+ " GROUP BY " + TIME_COL +
                 " ORDER BY " + TIME_COL*/;  //For now, don't group by datetime, only aggregate everything into one raster
         //Add temporal restrictions if there exist
         String temporalFilter = "";
@@ -186,15 +258,13 @@ public class PostgisRasterDAO implements RasterDataManager {
         }
 
         //Add spatial restrictions if there exist
-        //If polygon object would be already validated that it's indeed a polygon, but here it's just a string
-        //Not gonna add a whole library just for one data type in this method call, maybe in the future when it's needed
-        //in other places besides from here
+        //Validate if polygon exists and isn't empty
         if (withinPolygon != null && !withinPolygon.isEmpty()) {
             String polygon = "ST_GeomFromText('" + withinPolygon + "')";
 
             //modify query to clip polygon area from raster
-            baseQuery = baseQuery.replaceAll("ST_Union\\((\\S+)\\)",
-                    "ST_Union(ST_Clip($1, " + polygon + ")" + aggOp + ")");
+            baseQuery = baseQuery.replaceAll("ST_Union\\((\\S+)(,\\s*'\\w+')?\\)",
+                    "ST_Union(ST_Clip($1, " + polygon + ")$2)");
             spatialFilter = "(" + rasterCol + " && " + polygon + ")";
         }
 
@@ -217,7 +287,7 @@ public class PostgisRasterDAO implements RasterDataManager {
         }
 
 
-        System.out.println(baseQuery);
+        MessageMediator.sendMessage(baseQuery);
 
         return baseQuery;
     }
@@ -227,12 +297,19 @@ public class PostgisRasterDAO implements RasterDataManager {
                                        String aggOp, File outputFile) {
 
         //Construct query...
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        FileOutputStream fout = null;
+        byte[] ras = null;
         try {
+            //start and end time should be not null and valid dates...
+            //withinPolygon should be not null but could be not an area polygon (point, line, etc)
+
             String query = getSpatioTemporalQuery(table, rasterCol, startTime, endTime, withinPolygon, outputFormat, aggOp);
 
             //Execute query...
-            PreparedStatement ps = PG_CON.prepareStatement(query);
-            ResultSet rs = ps.executeQuery();
+            ps = PG_CON.prepareStatement(query);
+            rs = ps.executeQuery();
             //Don't know if it should return all in one row or in multiple ones... For know let it be just one
             //If every row must be united into one to correctly export it then it should be better to implement
             //a stored procedure in postgresql to directly export it to a file (without loading the data in memory).
@@ -242,18 +319,12 @@ public class PostgisRasterDAO implements RasterDataManager {
             //Do something with the retrieved data...
             if (outputFile != null && rs.next()) {
                 //Write to file instead of returning
-                FileOutputStream fout = new FileOutputStream(outputFile);
+                fout = new FileOutputStream(outputFile);
 
                 fout.write(rs.getBytes(1));
-                fout.close();
 
-                close(ps, rs);
             } else if (rs.next()) {
-                byte[] ras = rs.getBytes(1);
-
-                close(ps, rs);
-
-                return ras;
+                ras = rs.getBytes(1);
             }
         } catch (SQLException e) {
             MessageMediator.sendMessage("Error while retrieving raster data!: " + e,
@@ -261,14 +332,25 @@ public class PostgisRasterDAO implements RasterDataManager {
         } catch (IOException e) {
             MessageMediator.sendMessage("Error writing raster data to file! :>" + e,
                     MessageMediator.ERROR_MESSAGE);
+        } finally {
+            try {
+                close(ps, rs);
+                if(fout != null) fout.close();
+            } catch (SQLException | IOException e1) {
+                e1.printStackTrace();
+            }
         }
 
-        return null;
+        return ras;
     }
 
     //Get data from point...
-    public Double[] getDataFromPoint(String table, String rasterCol, Point point, LocalDateTime startTime,
+    public Number[] getDataFromPoint(String table, String rasterCol, Point point, LocalDateTime startTime,
                                             LocalDateTime endTime) {
+
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        Number[] ras = null;
 
         if (table == null || table.isEmpty() || rasterCol == null || rasterCol.isEmpty() ||
                 point == null || point.isEmpty()) {
@@ -276,6 +358,7 @@ public class PostgisRasterDAO implements RasterDataManager {
                     MessageMediator.ERROR_MESSAGE);
             return null;
         }
+
         try {
             String query = "SELECT array_agg(val) FROM (SELECT ST_Value(" + rasterCol + ", " +
                     "ST_GeomFromText('" + point + "')) AS val FROM " + table + " WHERE (" + rasterCol +
@@ -295,27 +378,30 @@ public class PostgisRasterDAO implements RasterDataManager {
 
             query += " ORDER BY " + TIME_COL + ") AS t";
 
-            System.out.println(query);
+            MessageMediator.sendMessage(query);
 
             //Execute query...
-            PreparedStatement ps = PG_CON.prepareStatement(query);
-            ResultSet rs = ps.executeQuery();
+            ps = PG_CON.prepareStatement(query);
+            rs = ps.executeQuery();
 
             if(rs.next()) {
-                Double[] ras = (Double[]) rs.getArray(1).getArray();
-
-                close(ps, rs);
-
-                return ras;
+                //This could be a null or empty array I guess, so execute with caution...
+                Array arr = rs.getArray(1);
+                if(arr != null) ras = (Number[]) arr.getArray();
             }
-
-            close(ps, rs);
         } catch (SQLException e) {
             MessageMediator.sendMessage("Error while retrieving the point data!: " + e,
                     MessageMediator.ERROR_MESSAGE);
+        } finally {
+            try {
+                close(ps, rs);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
-        return null;
+
+        return ras;
     }
 
     public List<Map<String, Object>> getStorageSchema(String database) {
@@ -350,35 +436,5 @@ public class PostgisRasterDAO implements RasterDataManager {
 
         return schema;
     }
-
-
-
-//    public static void main(String[] args) {
-//        try {
-//            System.out.println(PostgisRasterDAO.getMetadata("trmm", "precipitation"));
-//            System.out.println("Longitudes: " + PostgisRasterDAO.getWidth("trmm", "precipitation"));
-//            System.out.println("Latitudes: " + PostgisRasterDAO.getHeight("trmm", "precipitation"));
-//            System.out.println("Temp. coverage: " + PostgisRasterDAO.getTemporalCoverage("trmm"));
-//            System.out.println("Total times: " + PostgisRasterDAO.getTotalTimes("trmm"));
-//            System.out.println("Height levels: " + PostgisRasterDAO.getBands("trmm", "precipitation"));
-//            System.out.println("Origin: " + PostgisRasterDAO.getOrigin("trmm", "precipitation"));
-//            System.out.println("Spatial resolution: " + PostgisRasterDAO.getSpatialRes("trmm", "precipitation"));
-//            System.out.println("Temporal resolution: " + PostgisRasterDAO.getTemporalRes("trmm"));
-//            System.out.println(Arrays.toString(PostgisRasterDAO.getRasterData("trmm",
-//                    "precipitation", LocalDateTime.of(2011, 10, 5, 0, 0),
-//                    LocalDateTime.of(2011, 10, 10, 0, 0),
-//                    new GeometryFactory().toGeometry(new Envelope(new Coordinate(-125.746697, 49.484329),
-//                            new Coordinate(-66.359532, 23.378081))),
-//                    "GTiff", "MEAN", new File("/home/jdosornio/raster"))));
-//            System.out.println(Arrays.toString(PostgisRasterDAO.getDataFromPoint("trmm", "precipitation",
-//                    new GeometryFactory().createPoint(new Coordinate(-160, 45.75)),
-//                    LocalDateTime.of(2011, 7, 7, 0, 0),
-//                    LocalDateTime.of(2011, 7, 9, 0, 0))));
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//
-//
-//    }
 
 }

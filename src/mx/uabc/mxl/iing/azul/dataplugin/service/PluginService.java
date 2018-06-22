@@ -20,7 +20,10 @@ package mx.uabc.mxl.iing.azul.dataplugin.service;
     along with DataPlugin.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import mx.uabc.mxl.iing.azul.dataplugin.datastore.CatalogManager;
 import mx.uabc.mxl.iing.azul.dataplugin.registry.PluginManager;
+import org.bson.Document;
+import org.json.JSONArray;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -56,11 +59,12 @@ public class PluginService {
      *
      * @return a list of strings representing the names of all the application registered plugins
      */
-    @Path("list")
+    @Path("list-p")
     @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public String listPlugins() {
-        return PluginManager.listPlugins().toString();
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getPlugins() {
+        //Should try to return the plugins from the catalog, but is better to get the registered ones...
+        return new JSONArray(PluginManager.listPlugins()).toString();
     }
 
     /**
@@ -75,5 +79,25 @@ public class PluginService {
     @Produces(MediaType.TEXT_PLAIN)
     public String showPluginInfo(@PathParam("name") String pluginName) {
         return PluginManager.showInfo(pluginName);
+    }
+
+    /**
+     * Gets the metadata if a specific plugin given its name and version. It returns the information in a
+     * JSON formatted string
+     *
+     * @param name the name of the plugin
+     * @param version the version of the plugin
+     *
+     * @return A JSON String with the plugin metadata such as name, description, vendor, script paths, etc
+     */
+    @Path("get-meta/{name}/{version}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getPluginMetadata(@PathParam("name") String name, @PathParam("version") String version) {
+        Document p = CatalogManager.findPlugin(name, version);
+
+
+        //Return an empty JSON object if plugin not found...
+        return (p != null) ? p.toJson() : "{}";
     }
 }

@@ -37,6 +37,6 @@ public class RestApp extends Application {
 
     @Override
     public Set<Class<?>> getClasses() {
-        return new HashSet<>(Arrays.asList(PluginService.class, CatalogService.class));
+        return new HashSet<>(Arrays.asList(PluginService.class, CatalogService.class, GridDataService.class));
     }
 }

@@ -65,6 +65,12 @@ public abstract class Plugin {
     }
 
 
+    /**
+     * This method was originally meant to return the remaining metadata, but instead returns the
+     * {@link PluginDescriptor} associated with this Plugin instance
+     *
+     * @return the {@link PluginDescriptor} object
+     */
     public PluginDescriptor getMetadata() {
         return getDescriptor();
     }
